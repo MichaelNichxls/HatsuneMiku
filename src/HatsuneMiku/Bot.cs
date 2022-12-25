@@ -10,67 +10,66 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace HatsuneMiku
+namespace HatsuneMiku;
+
+public class Bot : IDisposable
 {
-    public class Bot : IDisposable
+    private bool _disposed;
+
+    public DiscordClient Client { get; }
+    public CommandsNextExtension Commands { get; }
+    public SlashCommandsExtension SlashCommands { get; }
+
+    // InitAsync()?
+    // No await :(
+    // Make configurable
+    public Bot()
     {
-        private bool _disposed;
+        // ReadOnlySpan?
+        string configJson = File.ReadAllText(Path.Combine(Program.ProjectDirectory, "config.json"), new UTF8Encoding(false));
+        Config config = JsonSerializer.Deserialize<Config>(configJson);
 
-        public DiscordClient Client { get; }
-        public CommandsNextExtension Commands { get; }
-        public SlashCommandsExtension SlashCommands { get; }
+        // Look at configs
 
-        // InitAsync()?
-        // No await :(
-        // Make configurable
-        public Bot()
+        Client = new(new DiscordConfiguration
         {
-            // ReadOnlySpan?
-            string configJson = File.ReadAllText(Path.Combine(Program.ProjectDirectory, "config.json"), new UTF8Encoding(false));
-            Config config = JsonSerializer.Deserialize<Config>(configJson);
+            Token = config.Token,
+            Intents = DiscordIntents.All,
+            MinimumLogLevel = LogLevel.Debug
+        });
+        Client.Ready += Client_Ready;
 
-            // Look at configs
+        Commands = Client.UseCommandsNext(new CommandsNextConfiguration
+        {
+            StringPrefixes = new[] { config.Prefix, "39" }
+        });
+        Commands.RegisterCommands(Assembly.GetExecutingAssembly()); // ?
 
-            Client = new(new DiscordConfiguration
-            {
-                Token = config.Token,
-                Intents = DiscordIntents.All,
-                MinimumLogLevel = LogLevel.Debug
-            });
-            Client.Ready += Client_Ready;
+        SlashCommands = Client.UseSlashCommands();
+        SlashCommands.RegisterCommands(Assembly.GetExecutingAssembly()); // ?
+    }
 
-            Commands = Client.UseCommandsNext(new CommandsNextConfiguration
-            {
-                StringPrefixes = new[] { config.Prefix, "39" }
-            });
-            Commands.RegisterCommands(Assembly.GetExecutingAssembly()); // ?
+    private Task Client_Ready(DiscordClient sender, ReadyEventArgs e) => Task.CompletedTask;
 
-            SlashCommands = Client.UseSlashCommands();
-            SlashCommands.RegisterCommands(Assembly.GetExecutingAssembly()); // ?
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+            return;
+
+        if (disposing)
+        {
+            Client?.Dispose();
+            Commands?.Dispose();
         }
 
-        private Task Client_Ready(DiscordClient sender, ReadyEventArgs e) => Task.CompletedTask;
+        _disposed = true;
+    }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
+    public void Dispose() => Dispose(true);
 
-            if (disposing)
-            {
-                Client?.Dispose();
-                Commands?.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        public void Dispose() => Dispose(true);
-
-        public async Task RunAsync()
-        {
-            await Client.ConnectAsync();
-            await Task.Delay(-1);
-        }
+    public async Task RunAsync()
+    {
+        await Client.ConnectAsync();
+        await Task.Delay(-1);
     }
 }

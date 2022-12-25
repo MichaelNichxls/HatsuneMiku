@@ -1,15 +1,14 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace HatsuneMiku
-{
-    // readonly?
-    public struct Config
-    {
-        // InternalsVisibleTo
-        [JsonPropertyName("token")]
-        public string Token { get; init; }
+namespace HatsuneMiku;
 
-        [JsonPropertyName("prefix")]
-        public string Prefix { get; init; }
-    }
+// readonly?
+public struct Config
+{
+    // InternalsVisibleTo
+    [JsonPropertyName("token")]
+    public string Token { get; init; }
+
+    [JsonPropertyName("prefix")]
+    public string Prefix { get; init; }
 }
