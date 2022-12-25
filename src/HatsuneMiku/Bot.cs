@@ -16,9 +16,38 @@ namespace HatsuneMiku
     {
         private bool _disposed;
 
-        public DiscordClient Client { get; private set; }
-        public CommandsNextExtension Commands { get; private set; }
-        public SlashCommandsExtension SlashCommands { get; private set; }
+        public DiscordClient Client { get; }
+        public CommandsNextExtension Commands { get; }
+        public SlashCommandsExtension SlashCommands { get; }
+
+        // InitAsync()?
+        // No await :(
+        // Make configurable
+        public Bot()
+        {
+            // ReadOnlySpan?
+            string configJson = File.ReadAllText(Path.Combine(Program.ProjectDirectory, "config.json"), new UTF8Encoding(false));
+            Config config = JsonSerializer.Deserialize<Config>(configJson);
+
+            // Look at configs
+
+            Client = new(new DiscordConfiguration
+            {
+                Token = config.Token,
+                Intents = DiscordIntents.All,
+                MinimumLogLevel = LogLevel.Debug
+            });
+            Client.Ready += Client_Ready;
+
+            Commands = Client.UseCommandsNext(new CommandsNextConfiguration
+            {
+                StringPrefixes = new[] { config.Prefix, "39" }
+            });
+            Commands.RegisterCommands(Assembly.GetExecutingAssembly()); // ?
+
+            SlashCommands = Client.UseSlashCommands();
+            SlashCommands.RegisterCommands(Assembly.GetExecutingAssembly()); // ?
+        }
 
         private Task Client_Ready(DiscordClient sender, ReadyEventArgs e) => Task.CompletedTask;
 
@@ -38,35 +67,8 @@ namespace HatsuneMiku
 
         public void Dispose() => Dispose(true);
 
-        // InitAsync()
         public async Task RunAsync()
         {
-            // ReadOnlySpan?
-            string configJson = await File.ReadAllTextAsync(Path.Combine(Program.ProjectDirectory, "config.json"), new UTF8Encoding(false)).ConfigureAwait(false);
-            Config config = JsonSerializer.Deserialize<Config>(configJson);
-
-            // Look at configs
-
-            // using
-            Client = new(new DiscordConfiguration
-            {
-                Token = config.Token,
-                Intents = DiscordIntents.All,
-                MinimumLogLevel = LogLevel.Debug
-            });
-            Client.Ready += Client_Ready;
-
-            // using
-            Commands = Client.UseCommandsNext(new CommandsNextConfiguration
-            {
-                StringPrefixes = new[] { config.Prefix, "39" },
-                //EnableMentionPrefix = false
-            });
-            Commands.RegisterCommands(Assembly.GetExecutingAssembly()); // ?
-
-            SlashCommands = Client.UseSlashCommands();
-            SlashCommands.RegisterCommands(Assembly.GetExecutingAssembly()); // ?
-
             await Client.ConnectAsync();
             await Task.Delay(-1);
         }
