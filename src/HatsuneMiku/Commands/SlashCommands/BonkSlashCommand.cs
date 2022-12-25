@@ -13,8 +13,9 @@ namespace HatsuneMiku.Commands.SlashCommands
     {
         public static DateTimeOffset TimeoutUntil => BonkCommand.TimeoutUntil;
 
-        [SlashCommand("bonk", "Bonks the horny")]
         //[SlashCommandPermissions]
+        [SlashCommand("bonk", "Bonks the horny")]
+        [SlashCooldown(3, 60, SlashCooldownBucketType.User)]
         public async Task Bonk(InteractionContext ctx, [Option("user", "User to bonk")] DiscordUser user)
         {
             DiscordMember member = await ctx.Guild.GetMemberAsync(user.Id).ConfigureAwait(false);

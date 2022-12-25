@@ -13,10 +13,12 @@ namespace HatsuneMiku.Commands
         // Make configurable
         public static DateTimeOffset TimeoutUntil => DateTimeOffset.UtcNow.AddSeconds(10);
 
+        // Use title?
         // Relocate link
         // Disallow timeout if member in question is in vc
         [Command("bonk")]
         [Description("Bonks the horny")]
+        [Cooldown(3, 60, CooldownBucketType.User)]
         public async Task Bonk(CommandContext ctx, DiscordMember member)
         {
             try
