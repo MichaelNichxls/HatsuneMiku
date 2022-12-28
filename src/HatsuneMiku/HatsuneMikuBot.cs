@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace HatsuneMiku;
 
-public class Bot : IDisposable
+public class HatsuneMikuBot : IDisposable
 {
     private bool _disposed;
 
@@ -26,11 +26,11 @@ public class Bot : IDisposable
 
     // InitAsync()?
     // Make configurable
-    private Bot()
+    private HatsuneMikuBot()
     {
     }
 
-    public static async Task<Bot> CreateAsync()
+    public static async Task<HatsuneMikuBot> CreateAsync()
     {
         // ReadOnlySpan?
         // ConfigureAwait(false)?
@@ -48,7 +48,7 @@ public class Bot : IDisposable
             .BuildServiceProvider();
 
         // Look at configurations
-        Bot bot = new();
+        HatsuneMikuBot bot = new();
 
         bot.Client = new(new DiscordConfiguration
         {
