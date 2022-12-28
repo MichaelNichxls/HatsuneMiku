@@ -2,8 +2,12 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
+using GScraper;
+using GScraper.Google;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -16,37 +20,58 @@ public class Bot : IDisposable
 {
     private bool _disposed;
 
-    public DiscordClient Client { get; }
-    public CommandsNextExtension Commands { get; }
-    public SlashCommandsExtension SlashCommands { get; }
+    public DiscordClient Client { get; private set; }
+    public CommandsNextExtension Commands { get; private set; }
+    public SlashCommandsExtension SlashCommands { get; private set; }
 
     // InitAsync()?
-    // No await :(
     // Make configurable
-    public Bot()
+    private Bot()
+    {
+    }
+
+    public static async Task<Bot> CreateAsync()
     {
         // ReadOnlySpan?
-        string configJson = File.ReadAllText(Path.Combine(Program.ProjectDirectory, "config.json"), new UTF8Encoding(false));
+        // ConfigureAwait(false)?
+        string configJson = await File.ReadAllTextAsync("config.json", new UTF8Encoding(false));
         Config config = JsonSerializer.Deserialize<Config>(configJson);
 
-        // Look at configs
+        // Make service
+        // Make DB
+        using GoogleScraper scraper = new();
+        IEnumerable<GoogleImageResult> images = await scraper.GetImagesAsync("Hatsune Miku", safeSearch: SafeSearchLevel.Off);
 
-        Client = new(new DiscordConfiguration
+        // Look over
+        ServiceProvider services = new ServiceCollection()
+            .AddSingleton(images)
+            .BuildServiceProvider();
+
+        // Look at configurations
+        Bot bot = new();
+
+        bot.Client = new(new DiscordConfiguration
         {
             Token = config.Token,
             Intents = DiscordIntents.All,
             MinimumLogLevel = LogLevel.Debug
         });
-        Client.Ready += Client_Ready;
+        bot.Client.Ready += bot.Client_Ready;
 
-        Commands = Client.UseCommandsNext(new CommandsNextConfiguration
+        bot.Commands = bot.Client.UseCommandsNext(new CommandsNextConfiguration
         {
-            StringPrefixes = new[] { config.Prefix, "39" }
+            StringPrefixes = new[] { config.Prefix, "39" },
+            Services = services
         });
-        Commands.RegisterCommands(Assembly.GetExecutingAssembly()); // ?
+        bot.Commands.RegisterCommands(Assembly.GetExecutingAssembly()); //
 
-        SlashCommands = Client.UseSlashCommands();
-        SlashCommands.RegisterCommands(Assembly.GetExecutingAssembly()); // ?
+        bot.SlashCommands = bot.Client.UseSlashCommands(new SlashCommandsConfiguration
+        {
+            Services = services
+        });
+        bot.SlashCommands.RegisterCommands(Assembly.GetExecutingAssembly()); //
+
+        return bot;
     }
 
     private Task Client_Ready(DiscordClient sender, ReadyEventArgs e) => Task.CompletedTask;
