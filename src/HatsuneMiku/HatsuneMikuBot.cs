@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -39,12 +40,27 @@ public class HatsuneMikuBot : IDisposable
 
         // Make service
         // Make DB
+        // Filter out certain websites
         using GoogleScraper scraper = new();
-        IEnumerable<GoogleImageResult> images = await scraper.GetImagesAsync("Hatsune Miku", safeSearch: SafeSearchLevel.Off);
+        // Rename
+        IEnumerable<string> mikuImageUrls       = (await scraper.GetImagesAsync("Hatsune Miku Images", type: GoogleImageType.Photo)).Select(image => image.Url);
+        IEnumerable<string> mikuImageNsfwUrls   = (await scraper.GetImagesAsync("Hatsune Miku Tits", safeSearch: SafeSearchLevel.Off)).Select(image => image.Url);
+        IEnumerable<string> mikuGifUrls         = (await scraper.GetImagesAsync("Hatsune Miku GIFs", type: GoogleImageType.Animated)).Select(image => image.Url);
 
         // Look over
         ServiceProvider services = new ServiceCollection()
-            .AddSingleton(images)
+            .AddSingleton(mikuImageUrls)
+            .AddSingleton(mikuImageNsfwUrls)
+            .AddSingleton(mikuGifUrls)
+            // Transient
+            // Access by reference
+            .AddSingleton<ImageUrlServiceResolver>(serviceProvider => key => key switch
+            {
+                ImageType.Photo     => serviceProvider.GetServices<IEnumerable<string>>().ElementAt(0),
+                ImageType.PhotoNsfw => serviceProvider.GetServices<IEnumerable<string>>().ElementAt(1),
+                ImageType.Animated  => serviceProvider.GetServices<IEnumerable<string>>().ElementAt(2),
+                _                   => throw new KeyNotFoundException()
+            })
             .BuildServiceProvider();
 
         // Look at configurations
