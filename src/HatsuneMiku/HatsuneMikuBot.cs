@@ -5,6 +5,7 @@ using DSharpPlus.SlashCommands;
 using GScraper;
 using GScraper.Google;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HatsuneMiku;
 
-public class HatsuneMikuBot : IDisposable
+public class HatsuneMikuBot : IHostedService, IDisposable
 {
     private bool _disposed;
 
@@ -25,13 +27,41 @@ public class HatsuneMikuBot : IDisposable
     public CommandsNextExtension Commands { get; private set; }
     public SlashCommandsExtension SlashCommands { get; private set; }
 
-    // InitAsync()?
-    // Make configurable
-    private HatsuneMikuBot()
+    private Task Client_Ready(DiscordClient sender, ReadyEventArgs e) => Task.CompletedTask;
+
+    protected virtual void Dispose(bool disposing)
     {
+        if (_disposed)
+            return;
+
+        if (disposing)
+        {
+            Client?.Dispose();
+            Commands?.Dispose();
+
+            //System.Threading.Channels.ChannelClosedException
+            //HResult = 0x80131509
+            //Message = The channel has been closed.
+            //Source = System.Threading.Channels
+            //StackTrace:
+            //at System.Threading.Channels.ChannelWriter`1.Complete(Exception error)
+            //at DSharpPlus.CommandsNext.Executors.ParallelQueuedCommandExecutor.Dispose()
+            //at DSharpPlus.CommandsNext.CommandsNextExtension.Dispose()
+            //at HatsuneMiku.HatsuneMikuBot.Dispose(Boolean disposing) in C: \Users\Michael Nichols\source\repos\HatsuneMiku\src\HatsuneMiku\HatsuneMikuBot.cs:line 40
+            //at HatsuneMiku.HatsuneMikuBot.Dispose() in C: \Users\Michael Nichols\source\repos\HatsuneMiku\src\HatsuneMiku\HatsuneMikuBot.cs:line 47
+            //at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.DisposeAsync()
+        }
+
+        _disposed = true;
     }
 
-    public static async Task<HatsuneMikuBot> CreateAsync()
+    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "<Pending>")]
+    public void Dispose() => Dispose(true);
+
+    // private?
+    // Make configurable
+    // InitializeClientAsync?
+    public async Task InitializeAsync()
     {
         // ReadOnlySpan?
         // ConfigureAwait(false)?
@@ -42,6 +72,7 @@ public class HatsuneMikuBot : IDisposable
         // Make DB
         // Filter out certain websites
         using GoogleScraper scraper = new();
+
         // Rename
         IEnumerable<string> mikuImageUrls       = (await scraper.GetImagesAsync("Hatsune Miku Images", type: GoogleImageType.Photo)).Select(image => image.Url);
         IEnumerable<string> mikuImageNsfwUrls   = (await scraper.GetImagesAsync("Hatsune Miku Tits", safeSearch: SafeSearchLevel.Off)).Select(image => image.Url);
@@ -64,53 +95,31 @@ public class HatsuneMikuBot : IDisposable
             .BuildServiceProvider();
 
         // Look at configurations
-        HatsuneMikuBot bot = new();
-
-        bot.Client = new(new DiscordConfiguration
+        Client = new(new DiscordConfiguration
         {
             Token = config.Token,
             Intents = DiscordIntents.All,
             MinimumLogLevel = LogLevel.Debug
         });
-        bot.Client.Ready += bot.Client_Ready;
+        Client.Ready += Client_Ready;
 
-        bot.Commands = bot.Client.UseCommandsNext(new CommandsNextConfiguration
+        Commands = Client.UseCommandsNext(new CommandsNextConfiguration
         {
             StringPrefixes = new[] { config.Prefix, "39" },
             Services = services
         });
-        bot.Commands.RegisterCommands(Assembly.GetExecutingAssembly()); //
+        Commands.RegisterCommands(Assembly.GetExecutingAssembly()); //
 
-        bot.SlashCommands = bot.Client.UseSlashCommands(new SlashCommandsConfiguration
+        SlashCommands = Client.UseSlashCommands(new SlashCommandsConfiguration
         {
             Services = services
         });
-        bot.SlashCommands.RegisterCommands(Assembly.GetExecutingAssembly()); //
+        SlashCommands.RegisterCommands(Assembly.GetExecutingAssembly()); //
 
-        return bot;
-    }
-
-    private Task Client_Ready(DiscordClient sender, ReadyEventArgs e) => Task.CompletedTask;
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed)
-            return;
-
-        if (disposing)
-        {
-            Client?.Dispose();
-            Commands?.Dispose();
-        }
-
-        _disposed = true;
-    }
-
-    public void Dispose() => Dispose(true);
-
-    public async Task RunAsync()
-    {
         await Client.ConnectAsync();
-        await Task.Delay(-1);
     }
+
+    public async Task StartAsync(CancellationToken cancellationToken) => await InitializeAsync();
+
+    public async Task StopAsync(CancellationToken cancellationToken) => await Client.DisconnectAsync();
 }
