@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace HatsuneMiku.Commands.SlashCommands;
 
+// DI
 // Relocate?
 //[SlashCommandGroup]
 [SlashRequireGuild]

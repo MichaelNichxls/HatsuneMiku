@@ -12,8 +12,8 @@ public class MikuGifCommand : BaseCommandModule
 {
     private readonly IEnumerable<string> _gifs;
 
-    public MikuGifCommand(ImageUrlServiceResolver images) =>
-        _gifs = images(ImageType.Animated);
+    public MikuGifCommand(IDictionary<ImageType, IEnumerable<string>> images) =>
+        _gifs = images[ImageType.Animated];
 
     [Command("mikugif"), Aliases("mikugiphy", "mikutenor")]
     [Description("")]

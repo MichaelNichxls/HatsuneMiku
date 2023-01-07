@@ -12,8 +12,8 @@ public class MikuImageCommand : BaseCommandModule
 {
     private readonly IEnumerable<string> _images;
 
-    public MikuImageCommand(ImageUrlServiceResolver images) =>
-        _images = images(ImageType.Photo);
+    public MikuImageCommand(IDictionary<ImageType, IEnumerable<string>> images) =>
+        _images = images[ImageType.Photo];
 
     [Command("mikuimage"), Aliases("mikuimg")]
     [Description("")]

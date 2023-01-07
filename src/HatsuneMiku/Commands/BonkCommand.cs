@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace HatsuneMiku.Commands;
 
+// DI
 //[Category]
 [RequireGuild]
 public class BonkCommand : BaseCommandModule
@@ -16,6 +17,7 @@ public class BonkCommand : BaseCommandModule
     // Use title?
     // Relocate link
     // Disallow timeout if member in question is in vc
+    // ctx.RespondAsync()?
     [Command("bonk")]
     [Description("Bonks the horny")]
     [Cooldown(3, 60, CooldownBucketType.User)]

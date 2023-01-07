@@ -2,15 +2,10 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
-using GScraper;
-using GScraper.Google;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -23,10 +18,15 @@ public class HatsuneMikuBot : IHostedService, IDisposable
 {
     private bool _disposed;
 
+    private readonly IServiceProvider _services;
+
     public DiscordClient Client { get; private set; }
     public CommandsNextExtension Commands { get; private set; }
     public SlashCommandsExtension SlashCommands { get; private set; }
 
+    public HatsuneMikuBot(IServiceProvider services) => _services = services;
+
+    // Make local?
     private Task Client_Ready(DiscordClient sender, ReadyEventArgs e) => Task.CompletedTask;
 
     protected virtual void Dispose(bool disposing)
@@ -37,8 +37,8 @@ public class HatsuneMikuBot : IHostedService, IDisposable
         if (disposing)
         {
             Client?.Dispose();
-            Commands?.Dispose();
 
+            Commands?.Dispose();
             //System.Threading.Channels.ChannelClosedException
             //HResult = 0x80131509
             //Message = The channel has been closed.
@@ -60,39 +60,13 @@ public class HatsuneMikuBot : IHostedService, IDisposable
 
     // private?
     // Make configurable
-    // InitializeClientAsync?
+    // InitializeClientAsync()?
     public async Task InitializeAsync()
     {
         // ReadOnlySpan?
         // ConfigureAwait(false)?
         string configJson = await File.ReadAllTextAsync("config.json", new UTF8Encoding(false));
         Config config = JsonSerializer.Deserialize<Config>(configJson);
-
-        // Make service
-        // Make DB
-        // Filter out certain websites
-        using GoogleScraper scraper = new();
-
-        // Rename
-        IEnumerable<string> mikuImageUrls       = (await scraper.GetImagesAsync("Hatsune Miku Images", type: GoogleImageType.Photo)).Select(image => image.Url);
-        IEnumerable<string> mikuImageNsfwUrls   = (await scraper.GetImagesAsync("Hatsune Miku Tits", safeSearch: SafeSearchLevel.Off)).Select(image => image.Url);
-        IEnumerable<string> mikuGifUrls         = (await scraper.GetImagesAsync("Hatsune Miku GIFs", type: GoogleImageType.Animated)).Select(image => image.Url);
-
-        // Look over
-        ServiceProvider services = new ServiceCollection()
-            .AddSingleton(mikuImageUrls)
-            .AddSingleton(mikuImageNsfwUrls)
-            .AddSingleton(mikuGifUrls)
-            // Transient
-            // Access by reference
-            .AddSingleton<ImageUrlServiceResolver>(serviceProvider => key => key switch
-            {
-                ImageType.Photo     => serviceProvider.GetServices<IEnumerable<string>>().ElementAt(0),
-                ImageType.PhotoNsfw => serviceProvider.GetServices<IEnumerable<string>>().ElementAt(1),
-                ImageType.Animated  => serviceProvider.GetServices<IEnumerable<string>>().ElementAt(2),
-                _                   => throw new KeyNotFoundException()
-            })
-            .BuildServiceProvider();
 
         // Look at configurations
         Client = new(new DiscordConfiguration
@@ -106,15 +80,15 @@ public class HatsuneMikuBot : IHostedService, IDisposable
         Commands = Client.UseCommandsNext(new CommandsNextConfiguration
         {
             StringPrefixes = new[] { config.Prefix, "39" },
-            Services = services
+            Services = _services
         });
-        Commands.RegisterCommands(Assembly.GetExecutingAssembly()); //
+        Commands.RegisterCommands(Assembly.GetExecutingAssembly());
 
         SlashCommands = Client.UseSlashCommands(new SlashCommandsConfiguration
         {
-            Services = services
+            Services = _services
         });
-        SlashCommands.RegisterCommands(Assembly.GetExecutingAssembly()); //
+        SlashCommands.RegisterCommands(Assembly.GetExecutingAssembly());
 
         await Client.ConnectAsync();
     }

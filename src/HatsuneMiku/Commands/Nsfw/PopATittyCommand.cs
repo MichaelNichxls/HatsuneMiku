@@ -20,8 +20,8 @@ public class PopATittyCommand : BaseCommandModule
 
     private readonly IEnumerable<string> _images;
 
-    public PopATittyCommand(ImageUrlServiceResolver images) =>
-        _images = images(ImageType.PhotoNsfw);
+    public PopATittyCommand(IDictionary<ImageType, IEnumerable<string>> images) =>
+        _images = images[ImageType.PhotoNsfw];
 
     // Seed Random
     [Hidden]
