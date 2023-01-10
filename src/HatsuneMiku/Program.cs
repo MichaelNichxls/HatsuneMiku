@@ -1,6 +1,7 @@
 ﻿using GScraper;
 using GScraper.Google;
 using HatsuneMiku.Data;
+using HatsuneMiku.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,12 +12,12 @@ using System.Threading.Tasks;
 namespace HatsuneMiku;
 
 // InternalsVisibleTo
-public class Program
+internal class Program
 {
     // using
     // Change visibilities?
     public static async Task Main(string[] args) =>
-        await CreateHostBuilder(args).Build().RunAsync(); //.ConfigureAwait(false); ?
+        await CreateHostBuilder(args).Build().RunAsync();
 
     // ConfigureAppConfiguration
     public static IHostBuilder CreateHostBuilder(string[] args) =>

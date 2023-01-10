@@ -1,4 +1,4 @@
-﻿namespace HatsuneMiku;
+﻿namespace HatsuneMiku.Enums;
 
 public enum ImageType
 {

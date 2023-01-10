@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using HatsuneMiku.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,6 +12,7 @@ using DescriptionAttribute = DSharpPlus.CommandsNext.Attributes.DescriptionAttri
 
 namespace HatsuneMiku.Commands.Nsfw;
 
+// Hidden
 // RequireGuild?
 [RequireGuild, RequireNsfw]
 [EditorBrowsable(EditorBrowsableState.Never)]
