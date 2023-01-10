@@ -397,5 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# Discord bot configuration file
-[Cc]onfig.json
+# Discord bot app settings file
+[Aa]pp[Ss]ettings.json
