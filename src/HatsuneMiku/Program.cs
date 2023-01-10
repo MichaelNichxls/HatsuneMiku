@@ -3,6 +3,7 @@ using GScraper.Google;
 using HatsuneMiku.Data;
 using HatsuneMiku.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ internal class Program
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host
             .CreateDefaultBuilder(args)
+             // Add environment variables?
+            .ConfigureAppConfiguration(builder => builder.AddJsonFile("appsettings.json"/*, true?*/))
             .ConfigureServices(services =>
             {
                 using GoogleScraper scraper = new();
@@ -40,6 +43,7 @@ internal class Program
                     .AddHostedService<HatsuneMikuBot>()
                     // AddDbContextFactory()?
                     .AddDbContext<ImageContext>(options =>
+                        // Relocate to appsettings.json
                         options.UseSqlServer(
                             $@"Server=(localdb)\mssqllocaldb;Database={nameof(ImageContext)};Trusted_Connection=True;MultipleActiveResultSets=true",
                             sqlOptions => sqlOptions.MigrationsAssembly(typeof(ImageContext).Assembly.GetName().Name)))

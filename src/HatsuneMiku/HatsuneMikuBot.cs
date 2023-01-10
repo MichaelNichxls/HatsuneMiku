@@ -2,13 +2,11 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,12 +17,18 @@ public class HatsuneMikuBot : IHostedService, IDisposable
     private bool _disposed;
 
     private readonly IServiceProvider _services;
+    private readonly IConfiguration _config;
 
     public DiscordClient Client { get; private set; }
     public CommandsNextExtension Commands { get; private set; }
     public SlashCommandsExtension SlashCommands { get; private set; }
 
-    public HatsuneMikuBot(IServiceProvider services) => _services = services;
+    // I think this is "right"
+    public HatsuneMikuBot(IServiceProvider services, IConfiguration config)
+    {
+        _services = services;
+        _config = config;
+    }
 
     // Make local?
     private Task Client_Ready(DiscordClient sender, ReadyEventArgs e) => Task.CompletedTask;
@@ -65,17 +69,14 @@ public class HatsuneMikuBot : IHostedService, IDisposable
     // private?
     // Make configurable
     // InitializeClientAsync()?
+    // Configure in ctor?
     public async Task InitializeAsync()
     {
-        // ReadOnlySpan?
-        // ConfigureAwait(false)?
-        string appSettingsJson = await File.ReadAllTextAsync("appsettings.json", new UTF8Encoding(false));
-        AppSettings appSettings = JsonSerializer.Deserialize<AppSettings>(appSettingsJson);
-
         // Look at configurations
+        // Move some to appsettings.json
         Client = new(new DiscordConfiguration
         {
-            Token = appSettings.Token,
+            Token = _config["token"],
             Intents = DiscordIntents.All,
             MinimumLogLevel = LogLevel.Debug
         });
@@ -83,7 +84,8 @@ public class HatsuneMikuBot : IHostedService, IDisposable
 
         Commands = Client.UseCommandsNext(new CommandsNextConfiguration
         {
-            StringPrefixes = new[] { appSettings.Prefix, "39" },
+            // I think this is "right"
+            StringPrefixes = _config.GetSection("prefixes").Get<string[]>()!,
             Services = _services
         });
         Commands.RegisterCommands(Assembly.GetExecutingAssembly());
