@@ -69,13 +69,13 @@ public class HatsuneMikuBot : IHostedService, IDisposable
     {
         // ReadOnlySpan?
         // ConfigureAwait(false)?
-        string appSettingsJson = await File.ReadAllTextAsync("appsettings.json", new UTF8Encoding(false));
-        AppSettings appSettings = JsonSerializer.Deserialize<AppSettings>(appSettingsJson);
+        string configJson = await File.ReadAllTextAsync("config.json", new UTF8Encoding(false));
+        Config config = JsonSerializer.Deserialize<Config>(configJson);
 
         // Look at configurations
         Client = new(new DiscordConfiguration
         {
-            Token = appSettings.Token,
+            Token = config.Token,
             Intents = DiscordIntents.All,
             MinimumLogLevel = LogLevel.Debug
         });
@@ -83,7 +83,7 @@ public class HatsuneMikuBot : IHostedService, IDisposable
 
         Commands = Client.UseCommandsNext(new CommandsNextConfiguration
         {
-            StringPrefixes = new[] { appSettings.Prefix, "39" },
+            StringPrefixes = new[] { config.Prefix, "39" },
             Services = _services
         });
         Commands.RegisterCommands(Assembly.GetExecutingAssembly());

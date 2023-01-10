@@ -3,7 +3,7 @@
 namespace HatsuneMiku;
 
 // readonly?
-public struct AppSettings
+public struct Config
 {
     // InternalsVisibleTo
     [JsonPropertyName("token")]
