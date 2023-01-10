@@ -5,3 +5,9 @@ dotnet_diagnostic.IDE0055.severity = none
 
 # IDE0022: Use block body for methods
 dotnet_diagnostic.IDE0022.severity = none
+
+# IDE0160: Convert to block scoped namespace
+dotnet_diagnostic.IDE0160.severity = none
+
+# IDE0058: Expression value is never used
+dotnet_diagnostic.IDE0058.severity = none

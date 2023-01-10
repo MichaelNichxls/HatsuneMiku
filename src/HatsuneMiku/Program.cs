@@ -1,5 +1,7 @@
 ﻿using GScraper;
 using GScraper.Google;
+using HatsuneMiku.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
@@ -8,19 +10,23 @@ using System.Threading.Tasks;
 
 namespace HatsuneMiku;
 
-// Conserve memory usage
-internal class Program
+// InternalsVisibleTo
+public class Program
 {
     // using
     // Change visibilities?
-    private static async Task Main(string[] args) =>
-        await CreateHostBuilder(args)
+    public static async Task Main(string[] args) =>
+        await CreateHostBuilder(args).Build().RunAsync(); //.ConfigureAwait(false); ?
+
+    // ConfigureAppConfiguration
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host
+            .CreateDefaultBuilder(args)
             .ConfigureServices(services =>
             {
                 using GoogleScraper scraper = new();
 
                 // Temporary
-                // Make DB
                 // Filter out certain websites
                 IDictionary<ImageType, IEnumerable<string>> imageUrls = new Dictionary<ImageType, IEnumerable<string>>
                 {
@@ -30,15 +36,12 @@ internal class Program
                 };
 
                 services
-                    .AddSingleton(imageUrls)
-                    .AddHostedService<HatsuneMikuBot>();
-            })
-            .Build()
-            .RunAsync();
-            //.ConfigureAwait(false); ?
-
-    // ConfigureAppConfiguration
-    private static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args);
-            //.ConfigureServices(services => services.AddHostedService<HatsuneMikuBot>());
+                    .AddHostedService<HatsuneMikuBot>()
+                    // AddDbContextFactory()?
+                    .AddDbContext<ImageContext>(options =>
+                        options.UseSqlServer(
+                            $@"Server=(localdb)\mssqllocaldb;Database={nameof(ImageContext)};Trusted_Connection=True;MultipleActiveResultSets=true",
+                            sqlOptions => sqlOptions.MigrationsAssembly(typeof(ImageContext).Assembly.GetName().Name)))
+                    .AddSingleton(imageUrls);
+            });
 }

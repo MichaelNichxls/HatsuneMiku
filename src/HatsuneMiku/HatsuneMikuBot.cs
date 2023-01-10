@@ -58,6 +58,10 @@ public class HatsuneMikuBot : IHostedService, IDisposable
     //[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "<Pending>")]
     public void Dispose() => Dispose(true);
 
+    public async Task StartAsync(CancellationToken cancellationToken) => await InitializeAsync();
+
+    public async Task StopAsync(CancellationToken cancellationToken) => await Client.DisconnectAsync();
+
     // private?
     // Make configurable
     // InitializeClientAsync()?
@@ -92,8 +96,4 @@ public class HatsuneMikuBot : IHostedService, IDisposable
 
         await Client.ConnectAsync();
     }
-
-    public async Task StartAsync(CancellationToken cancellationToken) => await InitializeAsync();
-
-    public async Task StopAsync(CancellationToken cancellationToken) => await Client.DisconnectAsync();
 }
