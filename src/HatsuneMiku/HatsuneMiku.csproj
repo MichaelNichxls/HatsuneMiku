@@ -27,6 +27,7 @@
     
   <ItemGroup>
     <ProjectReference Include="..\HatsuneMiku.Data\HatsuneMiku.Data.csproj" />
+    <ProjectReference Include="..\HatsuneMiku.Shared\HatsuneMiku.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

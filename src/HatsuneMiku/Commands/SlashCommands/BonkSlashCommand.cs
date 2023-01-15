@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace HatsuneMiku.Commands.SlashCommands;
 
+// Rename to XCommandModule
 // DI
 // Relocate?
 //[SlashCommandGroup]
@@ -27,6 +28,7 @@ public class BonkSlashCommand : ApplicationCommandModule
         }
         finally
         {
+            // Throws if a role is mentioned instead of a user
             await ctx.CreateResponseAsync($"Bonk, {member.Mention}", new DiscordEmbedBuilder().WithImageUrl("https://i.imgur.com/w2rfJnr.png")).ConfigureAwait(false);
         }
     }

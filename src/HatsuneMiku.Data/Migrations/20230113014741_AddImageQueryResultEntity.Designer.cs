@@ -3,6 +3,7 @@ using HatsuneMiku.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HatsuneMiku.Data.Migrations
 {
     [DbContext(typeof(ImageContext))]
-    partial class ImageContextModelSnapshot : ModelSnapshot
+    [Migration("20230113014741_AddImageQueryResultEntity")]
+    partial class AddImageQueryResultEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,8 +65,7 @@ namespace HatsuneMiku.Data.Migrations
 
                     b.HasIndex("ImageQueryId");
 
-                    b.HasIndex("ImageResultId")
-                        .IsUnique();
+                    b.HasIndex("ImageResultId");
 
                     b.ToTable("ImageQueryResults");
                 });
@@ -104,8 +106,8 @@ namespace HatsuneMiku.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("HatsuneMiku.Data.Entities.Image.ImageResultEntity", "ImageResult")
-                        .WithOne("ImageQuery")
-                        .HasForeignKey("HatsuneMiku.Data.Entities.Image.ImageQueryResultEntity", "ImageResultId")
+                        .WithMany()
+                        .HasForeignKey("ImageResultId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -117,12 +119,6 @@ namespace HatsuneMiku.Data.Migrations
             modelBuilder.Entity("HatsuneMiku.Data.Entities.Image.ImageQueryEntity", b =>
                 {
                     b.Navigation("ImageResults");
-                });
-
-            modelBuilder.Entity("HatsuneMiku.Data.Entities.Image.ImageResultEntity", b =>
-                {
-                    b.Navigation("ImageQuery")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

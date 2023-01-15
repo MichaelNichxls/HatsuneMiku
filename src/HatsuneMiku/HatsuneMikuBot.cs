@@ -33,6 +33,14 @@ public class HatsuneMikuBot : IHostedService, IDisposable
     // Make local?
     private Task Client_Ready(DiscordClient sender, ReadyEventArgs e) => Task.CompletedTask;
 
+    private Task Commands_CommandErrored(CommandsNextExtension sender, CommandErrorEventArgs e)
+    {
+        Console.WriteLine(e.Exception.Message);
+        Console.WriteLine(e.Exception.StackTrace);
+
+        return Task.CompletedTask;
+    }
+
     protected virtual void Dispose(bool disposing)
     {
         if (_disposed)
@@ -59,8 +67,11 @@ public class HatsuneMikuBot : IHostedService, IDisposable
         _disposed = true;
     }
 
-    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "<Pending>")]
-    public void Dispose() => Dispose(true);
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     public async Task StartAsync(CancellationToken cancellationToken) => await InitializeAsync();
 
@@ -78,9 +89,10 @@ public class HatsuneMikuBot : IHostedService, IDisposable
         {
             Token = _config["token"],
             Intents = DiscordIntents.All,
-            MinimumLogLevel = LogLevel.Debug
+            MinimumLogLevel = LogLevel.Debug // Move
         });
         Client.Ready += Client_Ready;
+        //Client.ClientErrored
 
         Commands = Client.UseCommandsNext(new CommandsNextConfiguration
         {
@@ -89,6 +101,7 @@ public class HatsuneMikuBot : IHostedService, IDisposable
             Services = _services
         });
         Commands.RegisterCommands(Assembly.GetExecutingAssembly());
+        Commands.CommandErrored += Commands_CommandErrored; // Temporary
 
         SlashCommands = Client.UseSlashCommands(new SlashCommandsConfiguration
         {

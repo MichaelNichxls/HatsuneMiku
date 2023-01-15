@@ -18,23 +18,23 @@ namespace HatsuneMiku.Commands.Nsfw;
 // RequireGuild?
 [RequireGuild, RequireNsfw]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public class PopATittyCommand : BaseCommandModule
+public class MikuFutaCommand : BaseCommandModule
 {
     //public IEnumerable<GoogleImageResult> Images { private get; init; }
 
     private readonly IImageService _imageService;
 
-    public PopATittyCommand(IImageService imageService) => _imageService = imageService;
+    public MikuFutaCommand(IImageService imageService) => _imageService = imageService;
 
     // Seed Random
     [Hidden]
-    [Command("popatitty"), Aliases("popatit", "pop", "titty", "tit", "mikutitty", "mikutit")]
-    [Description("Hatsune Miku pops a titty")]
-    public async Task PopATitty(CommandContext ctx)
+    [Command("mikufuta"), Aliases("mikufutanari", "mikudick")]
+    [Description("")]
+    public async Task MikuFuta(CommandContext ctx)
     {
         // Move to ctor
         // Store query into variable
-        IEnumerable<ImageResultEntity> imageResults = await _imageService.GetAsync("Hatsune Miku Tits", safeSearchLevel: SafeSearchLevel.Off).ConfigureAwait(false);
+        IEnumerable<ImageResultEntity> imageResults = await _imageService.GetAsync("Hatsune Miku Futanari", safeSearchLevel: SafeSearchLevel.Off).ConfigureAwait(false);
 
         if (!imageResults.Any())
             return;
@@ -44,7 +44,7 @@ public class PopATittyCommand : BaseCommandModule
     }
 
     [Hidden]
-    [Command("popatittyadd"), Aliases("popatitadd", "popadd", "tittyadd", "titadd", "mikutittyadd", "mikutitadd")]
-    public async Task PopATittyAdd(CommandContext ctx) =>
-        await _imageService.AddAsync("Hatsune Miku Tits", safeSearchLevel: SafeSearchLevel.Off).ConfigureAwait(false);
+    [Command("mikufutaadd"), Aliases("mikufutanariadd", "mikudickadd")]
+    public async Task MikuFutaAdd(CommandContext ctx) =>
+        await _imageService.AddAsync("Hatsune Miku Futanari", safeSearchLevel: SafeSearchLevel.Off).ConfigureAwait(false);
 }

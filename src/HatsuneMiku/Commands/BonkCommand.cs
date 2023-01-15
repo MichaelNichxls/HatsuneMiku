@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace HatsuneMiku.Commands;
 
+// Rename to XCommandModule
 // DI
 //[Category]
 [RequireGuild]
@@ -29,6 +30,7 @@ public class BonkCommand : BaseCommandModule
         }
         finally
         {
+            // Throws if a role is mentioned instead of a user
             await ctx.Channel.SendMessageAsync($"Bonk, {member.Mention}", new DiscordEmbedBuilder().WithImageUrl("https://i.imgur.com/w2rfJnr.png")).ConfigureAwait(false);
         }
     }
