@@ -9,6 +9,6 @@ namespace HatsuneMiku.Services;
 public interface IImageService
 {
     // Rename
-    Task AddAsync(string query, ImageType imageType = ImageType.Any, SafeSearchLevel safeSearchLevel = SafeSearchLevel.Moderate);
-    Task<IEnumerable<ImageResultEntity>> GetAsync(string query, ImageType imageType = ImageType.Any, SafeSearchLevel safeSearchLevel = SafeSearchLevel.Moderate);
+    //Task AddAsync(string query, ImageType imageType, SafeSearchLevel safeSearchLevel);
+    Task<IEnumerable<ImageResultEntity>> GetOrAddImageResultsAsync(string query, ImageType imageType, SafeSearchLevel safeSearchLevel);
 }

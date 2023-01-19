@@ -93,35 +93,39 @@ public class ImageService : IImageService, IDisposable
         GC.SuppressFinalize(this);
     }
 
+    // Needed?
     private async Task<ImageQueryEntity?> GetImageQueryAsync(string query, ImageType imageType = ImageType.Any, SafeSearchLevel safeSearchLevel = SafeSearchLevel.Moderate) =>
         await _context.ImageQueries
             .Where(
+                // Define collation
                 // Override equality method
-                q =>
-                    q.Query.ToLower() == query.ToLower()
-                        && q.ImageType == imageType
-                        && q.SafeSearchLevel == safeSearchLevel)
+                q => q.Query.ToLower() == query.ToLower()
+                    && q.ImageType == imageType
+                    && q.SafeSearchLevel == safeSearchLevel)
             .Include(q => q.ImageResults)
             .Include(q => q.ImageResults)
                 .ThenInclude(r => r.ImageResult)
+            //.SingleAsync()
             .FirstOrDefaultAsync()
             .ConfigureAwait(false);
 
+    // Needed?
     private async Task<IEnumerable<ImageResultEntity>> GetImageResultsAsync(string query, ImageType imageType = ImageType.Any, SafeSearchLevel safeSearchLevel = SafeSearchLevel.Moderate) =>
         await _context.ImageResults
             .Where(
-                r =>
-                    r.ImageQuery.ImageQuery.Query.ToLower() == query.ToLower()
-                        && r.ImageQuery.ImageQuery.ImageType == imageType
-                        && r.ImageQuery.ImageQuery.SafeSearchLevel == safeSearchLevel)
+                r => r.ImageQuery.ImageQuery.Query.ToLower() == query.ToLower()
+                    && r.ImageQuery.ImageQuery.ImageType == imageType
+                    && r.ImageQuery.ImageQuery.SafeSearchLevel == safeSearchLevel)
             .Include(r => r.ImageQuery)
             .Include(r => r.ImageQuery)
                 .ThenInclude(q => q.ImageQuery)
             .ToListAsync()
             .ConfigureAwait(false);
 
+    // Rename
     private async Task AddImageQueryAsync(string query, ImageType imageType = ImageType.Any, SafeSearchLevel safeSearchLevel = SafeSearchLevel.Moderate)
     {
+        // Do this better
         ImageQueryEntity imageQuery = new()
         {
             Query = query,
@@ -133,6 +137,7 @@ public class ImageService : IImageService, IDisposable
         await _context.SaveChangesAsync().ConfigureAwait(false);
     }
 
+    // Rename
     private async Task AddImageResultsAsync(string query, ImageType imageType = ImageType.Any, SafeSearchLevel safeSearchLevel = SafeSearchLevel.Moderate)
     {
         List<IImageResult> images = (await GetImagesAsync(query, imageType, safeSearchLevel).ConfigureAwait(false)).ToList()!;
@@ -163,6 +168,7 @@ public class ImageService : IImageService, IDisposable
             imageResults.Add(imageResult);
         }
 
+        // Move down maybe
         await _context.AddRangeAsync(imageResults).ConfigureAwait(false);
 
         for (int i = 0; i < images.Count; i++)
@@ -177,25 +183,20 @@ public class ImageService : IImageService, IDisposable
         await _context.SaveChangesAsync().ConfigureAwait(false);
     }
 
-    // Make record or struct if possible
-    public async Task AddAsync(string query, ImageType imageType = ImageType.Any, SafeSearchLevel safeSearchLevel = SafeSearchLevel.Moderate)
-    {
-        //if ((await GetAsync(query, imageType, safeSearchLevel).ConfigureAwait(false)).Any())
-        //    return;
-
-        if ((await GetImageQueryAsync(query, imageType, safeSearchLevel).ConfigureAwait(false)) is null)
-            await AddImageQueryAsync(query, imageType, safeSearchLevel).ConfigureAwait(false);
-
-        if (!(await GetImageResultsAsync(query, imageType, safeSearchLevel).ConfigureAwait(false)).Any())
-            await AddImageResultsAsync(query, imageType, safeSearchLevel).ConfigureAwait(false);
-    }
-
     // Rename
-    public async Task<IEnumerable<ImageResultEntity>> GetAsync(string query, ImageType imageType = ImageType.Any, SafeSearchLevel safeSearchLevel = SafeSearchLevel.Moderate)
+    // Do this better
+    // Make record or struct if possible
+    public async Task<IEnumerable<ImageResultEntity>> GetOrAddImageResultsAsync(string query, ImageType imageType = ImageType.Any, SafeSearchLevel safeSearchLevel = SafeSearchLevel.Moderate)
     {
         ImageQueryEntity? imageQuery = await GetImageQueryAsync(query, imageType, safeSearchLevel).ConfigureAwait(false);
 
-        return imageQuery?.ImageResults.Select(r => r.ImageResult) ?? Enumerable.Empty<ImageResultEntity>();
+        if (imageQuery is not null)
+            return imageQuery.ImageResults.Select(r => r.ImageResult);
+        
+        await AddImageQueryAsync(query, imageType, safeSearchLevel).ConfigureAwait(false);
+        await AddImageResultsAsync(query, imageType, safeSearchLevel).ConfigureAwait(false);
+
+        return (await GetImageQueryAsync(query, imageType, safeSearchLevel).ConfigureAwait(false))!.ImageResults.Select(r => r.ImageResult);
     }
 
     // Make a method (that'll be more efficient) for getting a random image result

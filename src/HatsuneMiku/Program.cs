@@ -22,23 +22,22 @@ internal class Program
              // Add environment variables?
             .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"/*, true?*/))
             .ConfigureServices(
-                services =>
-                    services
-                        .AddHostedService<HatsuneMikuBot>()
-                        // AddDbContextFactory()?
-                        .AddDbContext<ImageContext>(
-                            options =>
-                                // Relocate to appsettings.json
-                                options
+                services => services
+                    .AddHostedService<HatsuneMikuBot>()
+                    // AddDbContextFactory()?
+                    .AddDbContext<ImageContext>( 
+                        options => options
 #if DEBUG
-                                    .EnableSensitiveDataLogging()
-                                    .EnableDetailedErrors()
+                            .EnableSensitiveDataLogging()
+                            .EnableDetailedErrors()
 #endif
-                                    .UseSqlServer(
-                                        $@"Server=(localdb)\mssqllocaldb;Database={nameof(ImageContext)};Trusted_Connection=True;MultipleActiveResultSets=true",
-                                        sqlOptions => sqlOptions.MigrationsAssembly(typeof(ImageContext).Assembly.GetName().Name))
-                                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking),
-                            // Temporary
-                            ServiceLifetime.Singleton)
-                        .AddSingleton<IImageService, ImageService>());
+                            .UseSqlServer(
+                                // Relocate to appsettings.json
+                                $@"Server=(localdb)\mssqllocaldb;Database={nameof(ImageContext)};Trusted_Connection=True;MultipleActiveResultSets=true",
+                                sqlOptions => sqlOptions.MigrationsAssembly(typeof(ImageContext).Assembly.GetName().Name))
+                            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking),
+                        // Temporary
+                        ServiceLifetime.Singleton)
+                    // Should this be a singleton?
+                    .AddSingleton<IImageService, ImageService>());
 }
