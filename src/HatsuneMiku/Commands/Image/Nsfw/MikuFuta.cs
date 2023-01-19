@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 using DescriptionAttribute = DSharpPlus.CommandsNext.Attributes.DescriptionAttribute;
 
-namespace HatsuneMiku.Commands.Nsfw;
+namespace HatsuneMiku.Commands.Image.Nsfw;
 
 // Hidden
 // RequireGuild?

@@ -4,7 +4,7 @@ using HatsuneMiku.Services;
 using HatsuneMiku.Shared.Enums;
 using System.Threading.Tasks;
 
-namespace HatsuneMiku.Commands;
+namespace HatsuneMiku.Commands.Image;
 
 public abstract class BaseImageCommandModule : BaseCommandModule
 {
@@ -37,9 +37,9 @@ public abstract class BaseImageCommandModule : BaseCommandModule
         // May or may not be necessary
         if (_initialized)
             return;
-        
+
         await ImageService.GetOrAddImageResultsAsync(Query, ImageType, SafeSearchLevel).ConfigureAwait(false);
-        
+
         _initialized = true;
     }
 }

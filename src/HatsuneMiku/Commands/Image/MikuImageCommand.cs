@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HatsuneMiku.Commands;
+namespace HatsuneMiku.Commands.Image;
 
 public class MikuImageCommand : BaseImageCommandModule
 {
