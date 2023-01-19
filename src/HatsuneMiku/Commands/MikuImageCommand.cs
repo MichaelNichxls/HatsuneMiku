@@ -11,30 +11,22 @@ using System.Threading.Tasks;
 
 namespace HatsuneMiku.Commands;
 
-public class MikuImageCommand : BaseCommandModule
+public class MikuImageCommand : BaseImageCommandModule
 {
-    // Rename
-    private readonly IImageService _imageService;
-
-    public MikuImageCommand(IImageService imageService) => _imageService = imageService;
+    public MikuImageCommand(IImageService imageService)
+        : base(imageService, "Hatsune Miku Images", imageType: ImageType.Photo)
+    {
+    }
 
     [Command("mikuimage"), Aliases("mikuimg")]
     [Description("")]
     public async Task MikuImage(CommandContext ctx)
     {
-        // Move to ctor
-        // Store query into variable
-        IEnumerable<ImageResultEntity> imageResults = await _imageService.GetAsync("Hatsune Miku Images", imageType: ImageType.Photo).ConfigureAwait(false);
-
-        if (!imageResults.Any())
-            return;
+        // Select/index via SQL query
+        // Remove default arguments in GetAsync()
+        IEnumerable<ImageResultEntity> imageResults = await ImageService.GetOrAddImageResultsAsync(Query, ImageType, SafeSearchLevel).ConfigureAwait(false);
 
         // Seed random and get through service provider
         await ctx.Channel.SendMessageAsync(new DiscordEmbedBuilder().WithImageUrl(imageResults.ElementAt(new Random().Next(imageResults.Count())).Url)).ConfigureAwait(false);
     }
-
-    [Hidden]
-    [Command("mikuimageadd"), Aliases("mikuimgadd")]
-    public async Task MikuImageAdd(CommandContext ctx) =>
-        await _imageService.AddAsync("Hatsune Miku Images", imageType: ImageType.Photo).ConfigureAwait(false);
 }

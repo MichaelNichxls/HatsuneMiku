@@ -18,13 +18,12 @@ namespace HatsuneMiku.Commands.Nsfw;
 // RequireGuild?
 [RequireGuild, RequireNsfw]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public class MikuFutaCommand : BaseCommandModule
+public class MikuFutaCommand : BaseImageCommandModule
 {
-    //public IEnumerable<GoogleImageResult> Images { private get; init; }
-
-    private readonly IImageService _imageService;
-
-    public MikuFutaCommand(IImageService imageService) => _imageService = imageService;
+    public MikuFutaCommand(IImageService imageService)
+        : base(imageService, "Hatsune Miku Futanari", safeSearchLevel: SafeSearchLevel.Off)
+    {
+    }
 
     // Seed Random
     [Hidden]
@@ -32,19 +31,10 @@ public class MikuFutaCommand : BaseCommandModule
     [Description("")]
     public async Task MikuFuta(CommandContext ctx)
     {
-        // Move to ctor
-        // Store query into variable
-        IEnumerable<ImageResultEntity> imageResults = await _imageService.GetAsync("Hatsune Miku Futanari", safeSearchLevel: SafeSearchLevel.Off).ConfigureAwait(false);
-
-        if (!imageResults.Any())
-            return;
+        // Remove default arguments in GetAsync()
+        IEnumerable<ImageResultEntity> imageResults = await ImageService.GetOrAddImageResultsAsync(Query, ImageType, SafeSearchLevel).ConfigureAwait(false);
 
         // Seed random and get through service provider
         await ctx.Channel.SendMessageAsync(new DiscordEmbedBuilder().WithImageUrl(imageResults.ElementAt(new Random().Next(imageResults.Count())).Url)).ConfigureAwait(false);
     }
-
-    [Hidden]
-    [Command("mikufutaadd"), Aliases("mikufutanariadd", "mikudickadd")]
-    public async Task MikuFutaAdd(CommandContext ctx) =>
-        await _imageService.AddAsync("Hatsune Miku Futanari", safeSearchLevel: SafeSearchLevel.Off).ConfigureAwait(false);
 }

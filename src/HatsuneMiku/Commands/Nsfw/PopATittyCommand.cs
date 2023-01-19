@@ -18,13 +18,12 @@ namespace HatsuneMiku.Commands.Nsfw;
 // RequireGuild?
 [RequireGuild, RequireNsfw]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public class PopATittyCommand : BaseCommandModule
+public class PopATittyCommand : BaseImageCommandModule
 {
-    //public IEnumerable<GoogleImageResult> Images { private get; init; }
-
-    private readonly IImageService _imageService;
-
-    public PopATittyCommand(IImageService imageService) => _imageService = imageService;
+    public PopATittyCommand(IImageService imageService)
+        : base(imageService, "Hatsune Miku Tits", safeSearchLevel: SafeSearchLevel.Off)
+    {
+    }
 
     // Seed Random
     [Hidden]
@@ -32,19 +31,10 @@ public class PopATittyCommand : BaseCommandModule
     [Description("Hatsune Miku pops a titty")]
     public async Task PopATitty(CommandContext ctx)
     {
-        // Move to ctor
-        // Store query into variable
-        IEnumerable<ImageResultEntity> imageResults = await _imageService.GetAsync("Hatsune Miku Tits", safeSearchLevel: SafeSearchLevel.Off).ConfigureAwait(false);
-
-        if (!imageResults.Any())
-            return;
+        // Remove default arguments in GetAsync()
+        IEnumerable<ImageResultEntity> imageResults = await ImageService.GetOrAddImageResultsAsync(Query, ImageType, SafeSearchLevel).ConfigureAwait(false);
 
         // Seed random and get through service provider
         await ctx.Channel.SendMessageAsync(new DiscordEmbedBuilder().WithImageUrl(imageResults.ElementAt(new Random().Next(imageResults.Count())).Url)).ConfigureAwait(false);
     }
-
-    [Hidden]
-    [Command("popatittyadd"), Aliases("popatitadd", "popadd", "tittyadd", "titadd", "mikutittyadd", "mikutitadd")]
-    public async Task PopATittyAdd(CommandContext ctx) =>
-        await _imageService.AddAsync("Hatsune Miku Tits", safeSearchLevel: SafeSearchLevel.Off).ConfigureAwait(false);
 }
