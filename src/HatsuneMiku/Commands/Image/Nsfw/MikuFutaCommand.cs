@@ -27,7 +27,7 @@ public class MikuFutaCommand : BaseImageCommandModule
 
     // Seed Random
     [Hidden]
-    [Command("mikufuta"), Aliases("mikufutanari", "mikudick")]
+    [Command("mikufuta"), Aliases("mikufutanari", "mikudick", "mikupenis")]
     [Description("")]
     public async Task MikuFuta(CommandContext ctx)
     {

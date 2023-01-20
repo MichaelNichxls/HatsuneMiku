@@ -27,7 +27,7 @@ public class PopATittyCommand : BaseImageCommandModule
 
     // Seed Random
     [Hidden]
-    [Command("popatitty"), Aliases("popatit", "pop", "titty", "tit", "mikutitty", "mikutit")]
+    [Command("popatitty"), Aliases("popatit", "pop", "mikutitty", "mikutit")]
     [Description("Hatsune Miku pops a titty")]
     public async Task PopATitty(CommandContext ctx)
     {
