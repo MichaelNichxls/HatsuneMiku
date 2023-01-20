@@ -4,7 +4,7 @@ using HatsuneMiku.Services;
 using HatsuneMiku.Shared.Enums;
 using System.Threading.Tasks;
 
-namespace HatsuneMiku.Commands.SlashCommands.Image;
+namespace HatsuneMiku.SlashCommands.Image;
 
 public abstract class ApplicationImageCommandModule : ApplicationCommandModule
 {

@@ -1,26 +1,28 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using GScraper;
 using HatsuneMiku.Data.Entities.Image;
 using HatsuneMiku.Services;
-using HatsuneMiku.Shared.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HatsuneMiku.Commands.SlashCommands.Image;
+namespace HatsuneMiku.SlashCommands.Image.Nsfw;
 
-public class MikuGifSlashCommand : ApplicationImageCommandModule
+[EditorBrowsable(EditorBrowsableState.Never)]
+public class PopATittySlashCommand : ApplicationImageCommandModule
 {
-    public MikuGifSlashCommand(IImageService imageService)
-        : base(imageService, "Hatsune Miku GIFs", imageType: ImageType.Animated)
+    public PopATittySlashCommand(IImageService imageService)
+        : base(imageService, "Hatsune Miku Tits", safeSearchLevel: SafeSearchLevel.Off)
     {
     }
 
-    [SlashCommand("mikugif", "Double L")]
-    public async Task MikuGif(InteractionContext ctx)
+    // Seed Random
+    [SlashCommand("popatitty", "Quadruple L", false)]
+    public async Task PopATitty(InteractionContext ctx)
     {
-        // Select/index via SQL query
         // Remove default arguments in GetAsync()
         IEnumerable<ImageResultEntity> imageResults = await ImageService.GetOrAddImageResultsAsync(Query, ImageType, SafeSearchLevel).ConfigureAwait(false);
 
