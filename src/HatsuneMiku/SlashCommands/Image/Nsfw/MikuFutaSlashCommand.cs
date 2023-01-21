@@ -20,7 +20,7 @@ public class MikuFutaSlashCommand : ApplicationImageCommandModule
     }
 
     // Seed Random
-    [SlashCommand("mikufuta", "Triple L", false)]
+    [SlashCommand("mikufuta", "Sends a random image of Hatsune Miku Futanari from off the Web", false)]
     public async Task MikuFuta(InteractionContext ctx)
     {
         // Remove default arguments in GetAsync()

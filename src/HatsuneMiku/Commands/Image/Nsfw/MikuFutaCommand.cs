@@ -14,8 +14,7 @@ using DescriptionAttribute = DSharpPlus.CommandsNext.Attributes.DescriptionAttri
 
 namespace HatsuneMiku.Commands.Image.Nsfw;
 
-// Hidden
-// RequireGuild?
+[Hidden]
 [RequireGuild, RequireNsfw]
 [EditorBrowsable(EditorBrowsableState.Never)]
 public class MikuFutaCommand : BaseImageCommandModule
@@ -26,9 +25,8 @@ public class MikuFutaCommand : BaseImageCommandModule
     }
 
     // Seed Random
-    [Hidden]
     [Command("mikufuta"), Aliases("mikufutanari", "mikudick", "mikupenis")]
-    [Description("")]
+    [Description("Sends a random image of Hatsune Miku Futanari from off the Web")]
     public async Task MikuFuta(CommandContext ctx)
     {
         // Remove default arguments in GetAsync()

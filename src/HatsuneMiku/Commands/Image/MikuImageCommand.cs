@@ -19,7 +19,7 @@ public class MikuImageCommand : BaseImageCommandModule
     }
 
     [Command("mikuimage"), Aliases("mikuimg")]
-    [Description("")]
+    [Description("Sends a random image of Hatsune Miku from off the Web")]
     public async Task MikuImage(CommandContext ctx)
     {
         // Select/index via SQL query

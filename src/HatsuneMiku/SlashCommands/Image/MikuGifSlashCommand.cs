@@ -17,7 +17,7 @@ public class MikuGifSlashCommand : ApplicationImageCommandModule
     {
     }
 
-    [SlashCommand("mikugif", "Double L")]
+    [SlashCommand("mikugif", "Sends a random GIF of Hatsune Miku from off the Web")]
     public async Task MikuGif(InteractionContext ctx)
     {
         // Select/index via SQL query

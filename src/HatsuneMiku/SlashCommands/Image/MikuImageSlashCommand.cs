@@ -17,7 +17,8 @@ public class MikuImageSlashCommand : ApplicationImageCommandModule
     {
     }
 
-    [SlashCommand("mikuimage", "L")]
+    // Disallow extra arguments
+    [SlashCommand("mikuimage", "Sends a random image of Hatsune Miku from off the Web")]
     public async Task MikuImage(InteractionContext ctx)
     {
         // Select/index via SQL query

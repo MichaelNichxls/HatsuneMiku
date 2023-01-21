@@ -20,7 +20,7 @@ public class PopATittySlashCommand : ApplicationImageCommandModule
     }
 
     // Seed Random
-    [SlashCommand("popatitty", "Quadruple L", false)]
+    [SlashCommand("popatitty", "Hatsune Miku pops a titty", false)]
     public async Task PopATitty(InteractionContext ctx)
     {
         // Remove default arguments in GetAsync()

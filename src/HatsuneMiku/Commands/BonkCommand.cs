@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 namespace HatsuneMiku.Commands;
 
 // Rename to XCommandModule
-// DI
 //[Category]
 [RequireGuild]
 public class BonkCommand : BaseCommandModule
 {
     // Make configurable
-    public static DateTimeOffset TimeoutUntil => DateTimeOffset.UtcNow.AddSeconds(10);
+    private static DateTimeOffset TimeoutUntil => DateTimeOffset.UtcNow.AddSeconds(10);
 
+    // Localize command name and description
+    // Suppress "Make static"
     // Use title?
     // Relocate link
     // Disallow timeout if member in question is in vc

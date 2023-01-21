@@ -14,8 +14,7 @@ using DescriptionAttribute = DSharpPlus.CommandsNext.Attributes.DescriptionAttri
 
 namespace HatsuneMiku.Commands.Image.Nsfw;
 
-// Hidden
-// RequireGuild?
+[Hidden]
 [RequireGuild, RequireNsfw]
 [EditorBrowsable(EditorBrowsableState.Never)]
 public class PopATittyCommand : BaseImageCommandModule
@@ -26,7 +25,6 @@ public class PopATittyCommand : BaseImageCommandModule
     }
 
     // Seed Random
-    [Hidden]
     [Command("popatitty"), Aliases("popatit", "pop", "mikutitty", "mikutit")]
     [Description("Hatsune Miku pops a titty")]
     public async Task PopATitty(CommandContext ctx)

@@ -1,22 +1,22 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
-using HatsuneMiku.Commands;
 using System;
 using System.Threading.Tasks;
 
 namespace HatsuneMiku.SlashCommands;
 
+// Source generator? lol
 // Rename to XCommandModule
-// DI
 // Relocate?
 //[SlashCommandGroup]
 [SlashRequireGuild]
 public class BonkSlashCommand : ApplicationCommandModule
 {
-    public static DateTimeOffset TimeoutUntil => BonkCommand.TimeoutUntil;
+    private static DateTimeOffset TimeoutUntil => DateTimeOffset.UtcNow.AddSeconds(10);
 
     // Suppress "Make static"
+    // Relocate link
     //[SlashCommandPermissions]
     [SlashCommand("bonk", "Bonks the horny")]
     [SlashCooldown(3, 60, SlashCooldownBucketType.User)]

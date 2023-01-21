@@ -19,7 +19,7 @@ public class MikuGifCommand : BaseImageCommandModule
     }
 
     [Command("mikugif"), Aliases("mikugiphy", "mikutenor")]
-    [Description("")]
+    [Description("Sends a random GIF of Hatsune Miku from off the Web")]
     public async Task MikuGif(CommandContext ctx)
     {
         // Select/index via SQL query
