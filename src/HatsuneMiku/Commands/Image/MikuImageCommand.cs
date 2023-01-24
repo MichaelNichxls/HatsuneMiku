@@ -1,6 +1,5 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using HatsuneMiku.Data.Entities.Image;
 using HatsuneMiku.Services;
 using HatsuneMiku.Shared.Enums;

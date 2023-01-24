@@ -1,6 +1,5 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using GScraper;
 using HatsuneMiku.Data.Entities.Image;
 using HatsuneMiku.Services;

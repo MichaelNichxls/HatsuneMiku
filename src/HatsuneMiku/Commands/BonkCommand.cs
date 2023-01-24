@@ -14,6 +14,7 @@ public class BonkCommand : BaseCommandModule
     // Make configurable
     private static DateTimeOffset TimeoutUntil => DateTimeOffset.UtcNow.AddSeconds(10);
 
+    // XAsync
     // Make configurable
     // Localize command name and description
     // Suppress "Make static"
