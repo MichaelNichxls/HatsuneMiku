@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="appsettings.example.json" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
