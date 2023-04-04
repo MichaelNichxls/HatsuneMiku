@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HatsuneMiku.Data.Migrations
 {
-    [DbContext(typeof(ImageContext))]
+    [DbContext(typeof(MediaContext))]
     [Migration("20230110030415_InitialCreate")]
     partial class InitialCreate
     {

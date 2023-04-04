@@ -6,33 +6,31 @@ using System.Threading.Tasks;
 
 namespace HatsuneMiku.Commands;
 
-// Rename to XCommandModule
-//[Category]
 [RequireGuild]
-public class BonkCommand : BaseCommandModule
+//[Category("Miscellaneous")]
+public sealed class BonkCommand : BaseCommandModule
 {
     // Make configurable
-    private static DateTimeOffset TimeoutUntil => DateTimeOffset.UtcNow.AddSeconds(10);
-
-    // XAsync
-    // Make configurable
-    // Localize command name and description
     // Suppress "Make static"
-    // Use title?
-    // Relocate link
+    // Change visibility
+    public static DateTimeOffset MemberTimeout => DateTimeOffset.UtcNow.AddSeconds(10);
+
+    // Localize command name and description
+    // Relocate link or use file
     // Disallow timeout if member in question is in vc
-    [Command("bonk")]
+    // Add permissions
+    [Command]
     [Description("Bonks the horny")]
     [Cooldown(3, 60, CooldownBucketType.User)]
-    public async Task Bonk(CommandContext ctx, DiscordMember member)
+    public async Task BonkAsync(CommandContext ctx, DiscordMember member)
     {
         try
         {
-            await member.TimeoutAsync(TimeoutUntil, "Horny").ConfigureAwait(false);
+            await member.TimeoutAsync(MemberTimeout, "Horny").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync($"Bonk, {member.Mention}").ConfigureAwait(false);
         }
         finally
         {
-            await ctx.Channel.SendMessageAsync($"Bonk, {member.Mention}").ConfigureAwait(false);
             await ctx.Channel.SendMessageAsync("https://i.imgur.com/w2rfJnr.png").ConfigureAwait(false);
         }
     }

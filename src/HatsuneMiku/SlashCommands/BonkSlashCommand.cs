@@ -4,34 +4,31 @@ using DSharpPlus.SlashCommands.Attributes;
 using System;
 using System.Threading.Tasks;
 
+// Move
 namespace HatsuneMiku.SlashCommands;
 
-// Rename to XCommandModule
-// Relocate?
-//[SlashCommandGroup]
 [SlashRequireGuild]
-public class BonkSlashCommand : ApplicationCommandModule
+public sealed class BonkSlashCommand : ApplicationCommandModule
 {
-    private static DateTimeOffset TimeoutUntil => DateTimeOffset.UtcNow.AddSeconds(10);
+    public static DateTimeOffset MemberTimeout => DateTimeOffset.UtcNow.AddSeconds(10);
 
     // Suppress "Make static"
     // Relocate link
     //[SlashCommandPermissions]
     [SlashCommand("bonk", "Bonks the horny")]
     [SlashCooldown(3, 60, SlashCooldownBucketType.User)]
-    public async Task Bonk(InteractionContext ctx, [Option("user", "User to bonk")] DiscordUser user)
+    public async Task BonkAsync(InteractionContext ctx, [Option("user", "User to bonk")] DiscordUser user)
     {
         DiscordMember member = await ctx.Guild.GetMemberAsync(user.Id).ConfigureAwait(false);
 
         try
         {
-            await member.TimeoutAsync(TimeoutUntil, "Horny").ConfigureAwait(false);
+            await member.TimeoutAsync(MemberTimeout, "Horny").ConfigureAwait(false);
+            await ctx.CreateResponseAsync($"Bonk, {member.Mention}").ConfigureAwait(false); // UHhhhhh
         }
         finally
         {
-            await ctx.CreateResponseAsync($"Bonk, {member.Mention}").ConfigureAwait(false);
             await ctx.Channel.SendMessageAsync("https://i.imgur.com/w2rfJnr.png").ConfigureAwait(false);
-
         }
     }
 }

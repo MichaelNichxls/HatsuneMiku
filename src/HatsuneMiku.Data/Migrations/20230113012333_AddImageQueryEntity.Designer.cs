@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HatsuneMiku.Data.Migrations
 {
-    [DbContext(typeof(ImageContext))]
+    [DbContext(typeof(MediaContext))]
     [Migration("20230113012333_AddImageQueryEntity")]
     partial class AddImageQueryEntity
     {
